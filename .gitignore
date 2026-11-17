@@ -1,0 +1,15 @@
+# SwiftPM
+.build/
+.swiftpm/
+/Package.resolved
+
+# Xcode
+xcuserdata/
+DerivedData/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# Benchmark results (package-benchmark)
+Benchmarks/.benchmarkBaselines/
