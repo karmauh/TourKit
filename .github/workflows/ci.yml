@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A newer push to the same branch or pull request cancels the run still in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  macos:
+    name: Test (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Show toolchain
+        run: swift --version
+      - name: Build
+        run: swift build --build-tests
+      - name: Test
+        run: swift test --skip-build
+
+  linux:
+    name: Test (Linux, Swift ${{ matrix.swift }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 6.2 is the oldest toolchain allowed by swift-tools-version; 6.4 is the current one.
+        swift: ["6.2", "6.4"]
+    container: swift:${{ matrix.swift }}-noble
+    steps:
+      - uses: actions/checkout@v7
+      - name: Show toolchain
+        run: swift --version
+      - name: Build
+        run: swift build --build-tests
+      - name: Test
+        run: swift test --skip-build
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    container: swift:6.4-noble
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check formatting
+        run: >
+          swift format lint --strict --recursive
+          Package.swift Sources Tests
+          Benchmarks/Package.swift Benchmarks/Sources Benchmarks/Tests Benchmarks/Benchmarks
+
+  docs:
+    name: Documentation
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build documentation
+        run: swift package generate-documentation --target TourKit --warnings-as-errors
