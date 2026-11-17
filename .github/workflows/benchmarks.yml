@@ -1,0 +1,36 @@
+name: Benchmarks
+
+# Runs only when started by hand from the Actions tab: shared runners are too noisy
+# for timing every commit, and the results are for reading, not for passing or failing.
+on:
+  workflow_dispatch:
+    inputs:
+      swift:
+        description: Swift toolchain
+        type: choice
+        options: ["6.4", "6.2"]
+        default: "6.4"
+
+permissions:
+  contents: read
+
+jobs:
+  benchmarks:
+    name: Benchmarks (Swift ${{ inputs.swift }})
+    runs-on: ubuntu-latest
+    container: swift:${{ inputs.swift }}-noble
+    defaults:
+      run:
+        working-directory: Benchmarks
+    steps:
+      - uses: actions/checkout@v7
+      # Swift 6.3 and later count allocations without jemalloc; 6.2 and earlier need it.
+      - name: Install jemalloc
+        if: inputs.swift == '6.2'
+        run: apt-get update && apt-get install -y libjemalloc-dev
+      - name: Test the TSPLIB parser
+        run: swift test
+      - name: TSPLIB quality report
+        run: swift run -c release TSPLIBReport | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Performance benchmarks
+        run: swift package benchmark --no-progress
