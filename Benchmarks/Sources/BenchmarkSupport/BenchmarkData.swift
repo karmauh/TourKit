@@ -32,9 +32,21 @@ public enum BenchmarkData {
         .init(name: "rbg443", bestKnown: 2720),
     ]
 
+    /// The command that downloads the instance files, which are not stored in the repository.
+    public static let downloadCommand = "Scripts/download-tsplib.sh"
+
+    /// The instances whose files are not in the `Data` folder yet.
+    public static var missingInstances: [Instance] {
+        instances.filter { !FileManager.default.fileExists(atPath: fileURL(for: $0).path) }
+    }
+
     /// Reads an instance from the `Data` folder.
     public static func load(_ instance: Instance) throws -> TSPLIBInstance {
-        try TSPLIBInstance(contentsOf: dataDirectory.appendingPathComponent("\(instance.name).atsp"))
+        try TSPLIBInstance(contentsOf: fileURL(for: instance))
+    }
+
+    private static func fileURL(for instance: Instance) -> URL {
+        dataDirectory.appendingPathComponent("\(instance.name).atsp")
     }
 
     /// A random asymmetric matrix with whole costs 60–1800, the same as in TourKit's tests.

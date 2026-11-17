@@ -6,10 +6,21 @@
 //
 // An optional argument changes the number of restarts, e.g. `TSPLIBReport 300`. Without it the
 // solver uses its default configuration, which is what the README table shows.
+//
+// The TSPLIB files are not in the repository; download them first with Scripts/download-tsplib.sh.
 
 import BenchmarkSupport
 import Foundation
 import TourKit
+
+let missing = BenchmarkData.missingInstances
+guard missing.isEmpty else {
+    let names = missing.map(\.name).joined(separator: ", ")
+    FileHandle.standardError.write(
+        Data("Missing TSPLIB files: \(names).\nRun \(BenchmarkData.downloadCommand) in the Benchmarks folder.\n".utf8)
+    )
+    exit(1)
+}
 
 var configuration = HeuristicSolver.Configuration()
 if CommandLine.arguments.count > 1 {

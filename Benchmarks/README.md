@@ -15,9 +15,15 @@ Run every command below from this folder (`Benchmarks/`).
 
 ## Solution quality
 
+The TSPLIB files are not stored in the repository. Download them once, then run the report:
+
 ```sh
+Scripts/download-tsplib.sh
 swift run -c release TSPLIBReport
 ```
+
+The script checks every file against `Data/checksums.sha256` and skips files that are already there.
+Without the files, the report stops with a message and the parser test of the instances is skipped.
 
 The table compares `HeuristicSolver` with its default configuration against the best known tour
 lengths of seven TSPLIB instances (see `Data/README.md`). An optional argument sets the number of

@@ -13,3 +13,9 @@ DerivedData/
 
 # Benchmark results (package-benchmark)
 Benchmarks/.benchmarkBaselines/
+
+# TSPLIB instances: downloaded by Benchmarks/Scripts/download-tsplib.sh, not redistributed
+Benchmarks/Data/*.atsp
+
+# Local project notes
+TASK-TourKit.md

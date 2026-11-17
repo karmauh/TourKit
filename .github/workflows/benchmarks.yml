@@ -22,12 +22,18 @@ jobs:
     defaults:
       run:
         working-directory: Benchmarks
+        # bash runs with -o pipefail, so a failing report is not hidden by `tee`.
+        shell: bash
     steps:
       - uses: actions/checkout@v7
       # Swift 6.3 and later count allocations without jemalloc; 6.2 and earlier need it.
       - name: Install jemalloc
         if: inputs.swift == '6.2'
         run: apt-get update && apt-get install -y libjemalloc-dev
+      - name: Download TSPLIB instances
+        run: |
+          command -v curl >/dev/null || (apt-get update && apt-get install -y curl)
+          Scripts/download-tsplib.sh
       - name: Test the TSPLIB parser
         run: swift test
       - name: TSPLIB quality report

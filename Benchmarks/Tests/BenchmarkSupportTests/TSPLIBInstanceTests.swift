@@ -52,7 +52,14 @@ struct TSPLIBInstanceTests {
         }
     }
 
-    @Test("Every benchmark instance parses with the expected size", arguments: BenchmarkData.instances.map(\.name))
+    @Test(
+        "Every benchmark instance parses with the expected size",
+        .enabled(
+            if: BenchmarkData.missingInstances.isEmpty,
+            "TSPLIB files are missing; run \(BenchmarkData.downloadCommand) in the Benchmarks folder"
+        ),
+        arguments: BenchmarkData.instances.map(\.name)
+    )
     func parsesBenchmarkInstances(name: String) throws {
         let expectedCounts = [
             "br17": 17, "ftv33": 34, "p43": 43, "ftv64": 65, "ft70": 70, "kro124p": 100, "rbg443": 443,

@@ -5,10 +5,11 @@ maintained by Gerhard Reinelt at Heidelberg University.
 
 - Source: <https://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/atsp/>
   (`<name>.atsp.gz`, unpacked; the files are unchanged).
-- Downloaded: 2026-11-17.
-- Licence: the TSPLIB pages do not state any terms of use or redistribution, so there is no
-  explicit licence for these files. Ask the maintainers if you need certainty before
-  redistributing them.
+- Checked on: 2026-11-17.
+- Licence: the TSPLIB pages do not state any terms of use or redistribution, so the files are
+  **not stored in this repository**. Download them with `Scripts/download-tsplib.sh`, which
+  verifies each file against `checksums.sha256`. A mismatch means the file on the server changed
+  and the results would no longer be comparable with the README table.
 
 All files use `TYPE: ATSP`, `EDGE_WEIGHT_TYPE: EXPLICIT` and `EDGE_WEIGHT_FORMAT: FULL_MATRIX`.
 The diagonal holds a placeholder (9999, 9999999, 100000000 or 0), which TourKit ignores.
