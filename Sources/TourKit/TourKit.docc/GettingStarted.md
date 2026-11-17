@@ -15,11 +15,12 @@ In Xcode, choose **File > Add Package Dependencies** and enter the repository UR
 https://github.com/karmauh/TourKit
 ```
 
-In a `Package.swift` manifest, add the package and the product:
+Choose **Up to Next Minor Version**: while TourKit is below 1.0, a minor version may contain breaking
+changes. In a `Package.swift` manifest, add the package and the product:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/karmauh/TourKit", from: "0.1.0")
+    .package(url: "https://github.com/karmauh/TourKit", .upToNextMinor(from: "0.1.0"))
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["TourKit"])
