@@ -15,6 +15,11 @@ let package = Package(
     products: [
         .library(name: "TourKit", targets: ["TourKit"])
     ],
+    dependencies: [
+        // Build-time only: adds `swift package generate-documentation`.
+        // No product of this package links against it.
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.5.0")
+    ],
     targets: [
         .target(
             name: "TourKit",
