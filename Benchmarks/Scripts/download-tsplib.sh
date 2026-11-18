@@ -34,7 +34,10 @@ while read -r expected file; do
         echo "ok        $file"
         continue
     fi
-    curl --fail --silent --show-error --location --max-time 120 \
+    # The server is sometimes slow or briefly unreachable: give up on a connection after
+    # 30 s and try again, instead of waiting minutes for a single attempt.
+    curl --fail --silent --show-error --location \
+        --connect-timeout 30 --max-time 120 --retry 3 --retry-delay 10 \
         --output "$TEMP_DIR/$file.gz" "$BASE_URL/$file.gz"
     gunzip --stdout "$TEMP_DIR/$file.gz" > "$TEMP_DIR/$file"
     if ! (cd "$TEMP_DIR" && check "$line"); then

@@ -30,10 +30,28 @@ jobs:
       - name: Install jemalloc
         if: inputs.swift == '6.2'
         run: apt-get update && apt-get install -y libjemalloc-dev
+      # The TSPLIB server is sometimes unreachable, so the files are cached after the first
+      # successful download. The key changes only when the checksums do, and the script
+      # verifies restored files anyway.
+      - name: Restore TSPLIB instances
+        id: tsplib-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: Benchmarks/Data/*.atsp
+          key: tsplib-${{ hashFiles('Benchmarks/Data/checksums.sha256') }}
+      - name: Install curl
+        if: steps.tsplib-cache.outputs.cache-hit != 'true'
+        run: command -v curl >/dev/null || (apt-get update && apt-get install -y curl)
+      # Always runs: on a cache hit it only checks the restored files and makes no request.
       - name: Download TSPLIB instances
-        run: |
-          command -v curl >/dev/null || (apt-get update && apt-get install -y curl)
-          Scripts/download-tsplib.sh
+        run: Scripts/download-tsplib.sh
+      # Saved right away, so a later failing step does not lose the download.
+      - name: Save TSPLIB instances
+        if: steps.tsplib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: Benchmarks/Data/*.atsp
+          key: ${{ steps.tsplib-cache.outputs.cache-primary-key }}
       - name: Test the TSPLIB parser
         run: swift test
       - name: TSPLIB quality report
